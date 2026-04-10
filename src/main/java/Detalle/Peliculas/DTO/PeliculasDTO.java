@@ -1,6 +1,6 @@
 package Detalle.Peliculas.DTO;
 
-public class PeliculasDTO {
+public class Peliculasdto {
 
     private Integer id;
     private String titulo;
@@ -9,10 +9,10 @@ public class PeliculasDTO {
     private String genero;
     private String sinopsis;
 
-    public PeliculasDTO() {
+    public Peliculasdto() {
     }
 
-    public PeliculasDTO(Integer id, String titulo, Integer anio, String director, String genero, String sinopsis) {
+    public Peliculasdto(Integer id, String titulo, Integer anio, String director, String genero, String sinopsis) {
         this.id = id;
         this.titulo = titulo;
         this.anio = anio;

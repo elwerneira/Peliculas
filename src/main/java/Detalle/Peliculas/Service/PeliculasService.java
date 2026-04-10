@@ -1,10 +1,11 @@
 package Detalle.Peliculas.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import Detalle.Peliculas.DTO.PeliculasDTO;
+import Detalle.Peliculas.DTO.Peliculasdto;
 import Detalle.Peliculas.Entity.PeliculasEntity;
 import Detalle.Peliculas.Repository.PeliculasRepository;
 
@@ -17,27 +18,53 @@ public class PeliculasService {
         this.repository = repository;
     }
 
-    public List<PeliculasDTO> obtenerTodos() {
+    public List<Peliculasdto> obtenerTodos() {
         return repository.findAll().stream()
                 .map(this::toDto)
                 .toList();
     }
 
-    public PeliculasDTO obtenerPorId(Integer id) {
+    public Peliculasdto obtenerPorId(Integer id) {
         return repository.findById(id)
                 .map(this::toDto)
                 .orElse(null);
     }
 
-    public PeliculasDTO crear(PeliculasDTO nuevo) {
+    public Peliculasdto crear(Peliculasdto nuevo) {
         PeliculasEntity entity = toEntity(nuevo);
         entity.setId(null);
 
         return toDto(repository.save(entity));
     }
 
-    private PeliculasDTO toDto(PeliculasEntity entity) {
-        return new PeliculasDTO(
+    public Peliculasdto actualizar(Integer id, Peliculasdto datos) {
+        Optional<PeliculasEntity> peliculaExistente = repository.findById(id);
+
+        if (peliculaExistente.isEmpty()) {
+            return null;
+        }
+
+        PeliculasEntity entity = peliculaExistente.get();
+        entity.setTitulo(datos.getTitulo());
+        entity.setAnio(datos.getAnio());
+        entity.setDirector(datos.getDirector());
+        entity.setGenero(datos.getGenero());
+        entity.setSinopsis(datos.getSinopsis());
+
+        return toDto(repository.save(entity));
+    }
+
+    public boolean eliminar(Integer id) {
+        if (!repository.existsById(id)) {
+            return false;
+        }
+
+        repository.deleteById(id);
+        return true;
+    }
+
+    private Peliculasdto toDto(PeliculasEntity entity) {
+        return new Peliculasdto(
                 entity.getId(),
                 entity.getTitulo(),
                 entity.getAnio(),
@@ -46,7 +73,7 @@ public class PeliculasService {
                 entity.getSinopsis());
     }
 
-    private PeliculasEntity toEntity(PeliculasDTO dto) {
+    private PeliculasEntity toEntity(Peliculasdto dto) {
         return new PeliculasEntity(
                 dto.getId(),
                 dto.getTitulo(),

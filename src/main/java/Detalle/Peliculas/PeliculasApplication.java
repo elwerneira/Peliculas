@@ -1,4 +1,4 @@
-package Detalle.Peliculas;
+package detalle.peliculas;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

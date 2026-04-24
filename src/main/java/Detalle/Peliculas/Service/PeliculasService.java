@@ -1,13 +1,13 @@
-package Detalle.Peliculas.Service;
+package detalle.peliculas.service;
 
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
-import Detalle.Peliculas.DTO.Peliculasdto;
-import Detalle.Peliculas.Entity.PeliculasEntity;
-import Detalle.Peliculas.Repository.PeliculasRepository;
+import detalle.peliculas.dto.Peliculasdto;
+import detalle.peliculas.entity.PeliculasEntity;
+import detalle.peliculas.repository.PeliculasRepository;
 
 @Service
 public class PeliculasService {

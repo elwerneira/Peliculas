@@ -1,4 +1,4 @@
-package Detalle.Peliculas.Entity;
+package detalle.peliculas.entity;
 
 
 import jakarta.persistence.Entity;

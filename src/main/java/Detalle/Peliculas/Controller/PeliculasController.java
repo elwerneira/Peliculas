@@ -1,9 +1,13 @@
-package Detalle.Peliculas.Controller;
+package detalle.peliculas.controller;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.hateoas.CollectionModel;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,8 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import Detalle.Peliculas.DTO.Peliculasdto;
-import Detalle.Peliculas.Service.PeliculasService;
+import detalle.peliculas.dto.Peliculasdto;
+import detalle.peliculas.service.PeliculasService;
 
 @RestController
 @RequestMapping("/peliculas")
@@ -34,9 +38,16 @@ public class PeliculasController {
     } 
 
     @GetMapping
-    public ResponseEntity<List<Peliculasdto>> readAll(){
+    public ResponseEntity<CollectionModel<Peliculasdto>> readAll(){
+        List<Peliculasdto> peliculas = service.obtenerTodos().stream()
+                .map(this::agregarLinks)
+                .toList();
 
-        return ResponseEntity.ok(service.obtenerTodos());
+        CollectionModel<Peliculasdto> collection = CollectionModel.of(
+                peliculas,
+                linkTo(methodOn(PeliculasController.class).readAll()).withSelfRel());
+
+        return ResponseEntity.ok(collection);
     }
 
     @GetMapping("/{id}")
@@ -49,13 +60,14 @@ public class PeliculasController {
             return ResponseEntity.notFound().build();
         } 
 
-        return ResponseEntity.ok(peliculas);
+        return ResponseEntity.ok(agregarLinks(peliculas));
     }
     
     @PostMapping
     public ResponseEntity<Peliculasdto> create(@RequestBody Peliculasdto body) {
+        Peliculasdto creada = agregarLinks(service.crear(body));
 
-        return ResponseEntity.ok(service.crear(body));
+        return ResponseEntity.status(HttpStatus.CREATED).body(creada);
     }
 
     @PutMapping("/{id}")
@@ -67,7 +79,7 @@ public class PeliculasController {
                 .body("Pelicula no encontrada. ID: " + id);
         }
 
-        return ResponseEntity.ok(actualiza);
+        return ResponseEntity.ok(agregarLinks(actualiza));
     }
 
     @DeleteMapping("/{id}")
@@ -80,5 +92,14 @@ public class PeliculasController {
         }
 
         return ResponseEntity.noContent().build();
+    }
+
+    private Peliculasdto agregarLinks(Peliculasdto pelicula) {
+        pelicula.removeLinks();
+        pelicula.add(linkTo(methodOn(PeliculasController.class).read(pelicula.getId())).withSelfRel());
+        pelicula.add(linkTo(methodOn(PeliculasController.class).readAll()).withRel("peliculas"));
+        pelicula.add(linkTo(methodOn(PeliculasController.class).actualizar(pelicula.getId(), null)).withRel("actualizar"));
+        pelicula.add(linkTo(methodOn(PeliculasController.class).eliminar(pelicula.getId())).withRel("eliminar"));
+        return pelicula;
     }
 }
